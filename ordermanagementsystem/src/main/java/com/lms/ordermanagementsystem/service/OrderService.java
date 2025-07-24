@@ -1,0 +1,27 @@
+package com.lms.ordermanagementsystem.service;
+
+import com.lms.ordermanagementsystem.dto.OrderDto;
+import com.lms.ordermanagementsystem.entity.Orders;
+import com.lms.ordermanagementsystem.repository.OrderRepo;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+
+@Service
+public class OrderService {
+	@Autowired
+    private OrderRepo orderRepo;
+	
+	
+    public List<Orders> getAllOrders() {
+        return orderRepo.findAll();
+    }
+
+    public void placeOrder(Orders order) {
+        orderRepo.save(order);
+    }
+
+}

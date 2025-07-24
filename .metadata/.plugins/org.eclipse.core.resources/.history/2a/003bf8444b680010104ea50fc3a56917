@@ -1,0 +1,54 @@
+package com.lms.ordermanagementsystem.controller;
+
+
+import com.lms.ordermanagementsystem.client.BookInterface;
+import com.lms.ordermanagementsystem.client.UserInterface;
+import com.lms.ordermanagementsystem.dto.OrderDto;
+import com.lms.ordermanagementsystem.entity.Book;
+import com.lms.ordermanagementsystem.entity.Orders;
+import com.lms.ordermanagementsystem.entity.User;
+import com.lms.ordermanagementsystem.payload.OrderResponse;
+import com.lms.ordermanagementsystem.payload.Status;
+import com.lms.ordermanagementsystem.repository.OrderRepo;
+import com.lms.ordermanagementsystem.service.OrderService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/order")
+public class OrderController {
+
+
+    @Autowired
+    private OrderService orderService;
+
+
+    @Autowired
+    private BookInterface bookInterface;
+
+    @Autowired
+    private UserInterface userInterface;
+
+    @GetMapping("/getorders")
+    public List<Orders> getOrders() {
+        return orderService.getAllOrders();
+    }
+
+    @PostMapping("/addorder")
+    public ResponseEntity<OrderResponse<?>> addOrder(@RequestBody OrderDto orders, HttpServletRequest request) {
+        Book book = bookInterface.getBookById(orders.getBookId()).get;
+        User user = userInterface.getUserBy(orders.getUserId());
+
+        Orders order = new Orders();
+        order.setBook(book);
+        order.setUser(user);
+        order.setQuantity(orders.getQuantity());
+        orderService.placeOrder(order);
+        return ResponseEntity.status(201).body(new OrderResponse(Status.ACCEPTED, "ORDER PLACED SUCCESSFULLY", order, request.getRequestURI()));
+    }
+}
