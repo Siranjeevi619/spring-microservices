@@ -1,0 +1,27 @@
+package com.cityzen.UserManagementService.Config;
+
+import com.cityzen.UserManagementService.models.ERole;
+import com.cityzen.UserManagementService.models.Role;
+import com.cityzen.UserManagementService.repository.RoleRepo;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
+public class RoleSeeder {
+
+    @Autowired
+    RoleRepo roleRepo;
+
+    @PostConstruct
+    public void seedRoles() {
+        for (ERole role : ERole.values()) {
+            if (roleRepo.findByName(role).isEmpty()) {
+                Role newRole = new Role();
+                newRole.setName(role);
+                roleRepo.save(newRole);
+                System.out.println("Seeded role: " + role.name());
+            }
+        }
+    }
+}
